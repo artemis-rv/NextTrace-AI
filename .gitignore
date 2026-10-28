@@ -1,0 +1,7 @@
+.env
+var/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+bench/results/*.json
