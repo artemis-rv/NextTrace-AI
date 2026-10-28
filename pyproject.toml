@@ -1,0 +1,29 @@
+[project]
+name = "nextrace-ai"
+version = "0.1.0"
+description = "NEXTRACE AI: modular-monolith backend for network attack forecasting and forensics (storage, pipeline, models, response, API)"
+requires-python = ">=3.12"
+dependencies = [
+  "SQLAlchemy>=2.0,<3",
+  "psycopg2-binary>=2.9",
+  "alembic>=1.14",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "redis>=5.0",
+  "scapy>=2.5",
+  "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+api = ["fastapi>=0.115", "uvicorn>=0.30", "httpx>=0.27"]
+ml = ["torch>=2.2", "scikit-learn>=1.4", "shap>=0.45"]
+test = ["pytest>=8", "fakeredis>=2.20", "pytest-asyncio>=0.23", "httpx>=0.27"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.setuptools.packages.find]
+include = ["nextrace*"]
