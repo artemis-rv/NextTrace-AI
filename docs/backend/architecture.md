@@ -8,47 +8,66 @@ versioned pydantic contract; nothing crosses as a table or a private class.
 
 ```mermaid
 flowchart LR
-  subgraph P4[Person 4: capture]
-    CAP[PcapReplaySource / LiveCaptureSource]
-    PARSE[nextrace.parsing: decode + FlowAssembler]
+  subgraph P4["Person 4: capture"]
+    CAP["PcapReplaySource / LiveCaptureSource"]
+    PARSE["nextrace.parsing: decode + FlowAssembler"]
   end
-  subgraph CORE[Integration layer: core.pipeline]
-    QB[(queue: batches)]
-    QS[(queue: states)]
-    ORCH[inference round]
-    CORR[correlation + risk]
-    FIND[alerts / findings]
-  end
-  subgraph P2[Person 2: temporal + detection]
-    SEQ[StreamingSequencer]
-    DET[Detector: LSTM+Attention / baseline]
-  end
-  subgraph P1[Person 1: forecasting]
-    GRAPH[GraphBuilder]
-    PROG[ProgressionForecaster: GAT / transition table]
-    SIM[Simulator + world model]
-  end
-  subgraph RESP[Integration: response]
-    POL[RulePolicyEngine]
-    MGR[ResponseManager]
-    CONN[FirewallConnector]
-  end
-  subgraph P3[Person 3: forensics]
-    UP[uploads]
-    FOR[DbForensicEngine]
-  end
-  API[FastAPI]
-  DB[(PostgreSQL 18)]
-  REDIS[(Redis window)]
-  OBJ[(object store)]
 
-  CAP --> PARSE --> |FlowBatchV1| QB --> SEQ --> |TemporalStateV1| QS --> ORCH
-  ORCH --> DET --> ORCH --> PROG --> ORCH
-  ORCH --> |ForecastResultV1| DB
-  ORCH --> CORR --> FIND --> DB
-  FIND --> |high/critical| POL --> MGR --> CONN
+  subgraph CORE["Integration layer: core.pipeline"]
+    QB[("queue: batches")]
+    QS[("queue: states")]
+    ORCH["inference round"]
+    CORR["correlation + risk"]
+    FIND["alerts / findings"]
+  end
+
+  subgraph P2["Person 2: temporal + detection"]
+    SEQ["StreamingSequencer"]
+    DET["Detector: LSTM+Attention / baseline"]
+  end
+
+  subgraph P1["Person 1: forecasting"]
+    GRAPH["GraphBuilder"]
+    PROG["ProgressionForecaster: GAT / transition table"]
+    SIM["Simulator + world model"]
+  end
+
+  subgraph RESP["Integration: response"]
+    POL["RulePolicyEngine"]
+    MGR["ResponseManager"]
+    CONN["FirewallConnector"]
+  end
+
+  subgraph P3["Person 3: forensics"]
+    UP["uploads"]
+    FOR["DbForensicEngine"]
+  end
+
+  API["FastAPI"]
+  DB[("PostgreSQL 18")]
+  REDIS[("Redis window")]
+  OBJ[("object store")]
+
+  CAP --> PARSE
+  PARSE -->|"FlowBatchV1"| QB
+  QB --> SEQ
+  SEQ -->|"TemporalStateV1"| QS
+  QS --> ORCH
+  ORCH --> DET
+  DET --> ORCH
+  ORCH --> PROG
+  PROG --> ORCH
+  ORCH -->|"ForecastResultV1"| DB
+  ORCH --> CORR
+  CORR --> FIND
+  FIND --> DB
+  FIND -->|"high/critical"| POL
+  POL --> MGR
+  MGR --> CONN
   SEQ --> REDIS
-  UP --> OBJ --> FOR --> |authorised link| DB
+  UP --> OBJ
+  OBJ --> FOR
+  FOR -->|"authorised link"| DB
   API --> DB
   API --> MGR
   API --> FOR

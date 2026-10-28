@@ -14,3 +14,5 @@ This repository contains:
 Models ship as typed slots: a deterministic baseline runs today, the LSTM+Attention detector trains with the included
 script, and the GNN/world-model slots are honest templates that report `unavailable` until a validated artifact exists.
 Nothing in the pipeline substitutes fake predictions for a missing model.
+
+New contributors: start with [CONTRIBUTING.md](CONTRIBUTING.md).
